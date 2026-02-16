@@ -18,7 +18,10 @@
         "crm",
     ],
     "data": [
+        "security/security_groups.xml",
+        "security/security.xml",
         "security/ir.model.access.csv",
+        
 
         "data/ir_sequence.xml",
         "data/ir_sequence_payout_batch.xml",
@@ -29,7 +32,7 @@
         "views/attribution_search_views.xml",
         "views/payout_batch_views.xml",
 
-        # ✅ MUST be before menus.xml (menus depends on actions)
+        # MUST be before menus.xml (menus depends on actions)
         "views/partner_attribution_ledger_views.xml",
 
         "views/report_invoice.xml",
@@ -41,7 +44,7 @@
         "views/website_partner_pages.xml",
         "views/portal_partner_pages.xml",
 
-        # ✅ menus near end
+        # menus near end
         "views/menus.xml",
     ],
     "post_init_hook": "post_init_hook",

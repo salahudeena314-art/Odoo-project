@@ -62,7 +62,7 @@ class PartnerAttributionInquiry(models.Model):
         string="Documents",
     )
 
-    # ✅ States used everywhere
+    # States used everywhere
     state = fields.Selection(
         [
             ("inquiry", "Inquiry"),
@@ -84,15 +84,29 @@ class PartnerAttributionInquiry(models.Model):
     # ----------------------------
     def _validate_admission(self):
         for rec in self:
-            # IBAN checksum validation (only if provided)
-            if rec.iban and not _iban_is_valid(rec.iban):
-                raise UserError(_("Invalid IBAN. Please check formatting and checksum."))
 
-            # Example business rule:
-            # For these roles, require VAT or CoC (at least one)
+            # Email required for portal creation
+            if not rec.email:
+                raise UserError(_("Email is required for partner approval."))
+
+            # IBAN required for commercial roles
+            if rec.partner_role in ("sales_agent", "sales_partner"):
+                if not rec.iban:
+                    raise UserError(_("IBAN is required for this partner role."))
+                if not _iban_is_valid(rec.iban):
+                    raise UserError(_("Invalid IBAN. Please check formatting and checksum."))
+
+            # VAT or CoC required for company-based roles
             if rec.partner_role in ("lead", "sales_agent", "sales_partner"):
                 if not rec.vat and not rec.coc:
-                    raise UserError(_("For this role, please provide at least one company identifier (VAT or CoC)."))
+                    raise UserError(_(
+                        "For this role, please provide at least one company identifier (VAT or CoC)."
+                    ))
+
+            # At least one document required for screening roles
+            if rec.partner_role in ("sales_agent", "sales_partner"):
+                if not rec.attachment_ids:
+                    raise UserError(_("Supporting documents must be uploaded before approval."))
 
     # ----------------------------
     # CRM Lead creation
@@ -100,7 +114,7 @@ class PartnerAttributionInquiry(models.Model):
     def _ensure_crm_lead(self):
         self.ensure_one()
 
-        # crm module check (safe)
+        # crm module check
         if "crm.lead" not in self.env:
             return False
 
@@ -157,7 +171,6 @@ class PartnerAttributionInquiry(models.Model):
                 "active": True,
             })
         else:
-            # ensure portal group + correct partner binding
             if user.partner_id.id != partner.id:
                 user.write({"partner_id": partner.id})
             if portal_group.id not in user.groups_id.ids:
@@ -165,14 +178,12 @@ class PartnerAttributionInquiry(models.Model):
             if not user.email:
                 user.write({"email": email})
 
-        # Generates a fresh signup/reset token on the partner and (optionally) emails it
         try:
             user.action_reset_password()
         except Exception:
-            # if mail is not configured, token might still be generated; if not, we fallback below
             pass
 
-        # Build URL from partner.signup_token
+
         partner = user.partner_id.sudo()
         partner.signup_prepare()
 

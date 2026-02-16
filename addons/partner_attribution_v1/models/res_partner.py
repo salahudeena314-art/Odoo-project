@@ -5,7 +5,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 
 try:
-    import psycopg2  # type: ignore
+    import psycopg2
 except Exception:
     psycopg2 = None
 
@@ -87,7 +87,7 @@ class ResPartner(models.Model):
     ]
 
     # ----------------------------
-    # Commission (basic) - SAFE (NO DB COLUMN)
+    # Commission (basic) - (NO DB COLUMN)
     # ----------------------------
     commission_rate = fields.Float(
         string="Commission Rate (%)",
@@ -197,7 +197,7 @@ class ResPartner(models.Model):
             }
         )
 
-        # ✅ Pass a safe date string into report context (avoid QWeb 'fields' / 'format_datetime')
+        # Pass a safe date string into report context (avoid QWeb 'fields' / 'format_datetime')
         today_str = fields.Datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         pdf, _ = self.env["ir.actions.report"].sudo().with_context(
@@ -265,7 +265,7 @@ class ResPartner(models.Model):
         self.write({"vat_verified": False, "vat_verified_on": False})
 
     # ----------------------------
-    # Helpers (collision-proof)
+    # Helpers
     # ----------------------------
     def _pick_and_cleanup_sequence(self, seq_code: str):
         Sequence = self.env["ir.sequence"].sudo()

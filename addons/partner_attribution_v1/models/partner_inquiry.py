@@ -57,7 +57,7 @@ class PartnerAttributionInquiry(models.Model):
     )
 
     # ----------------------------
-    # ✅ Fields required by your portal form / newer views
+    # Fields required by your portal form / newer views
     # ----------------------------
     applicant_name = fields.Char(string="Applicant Name")
     applicant_company = fields.Char(string="Company")
@@ -90,7 +90,7 @@ class PartnerAttributionInquiry(models.Model):
             rec.notes = rec.note
 
     # ----------------------------
-    # Your existing logic (unchanged)
+    # existing logic
     # ----------------------------
     def _find_existing_partner(self):
         """Try to match by email/phone first (safe default)."""
@@ -127,7 +127,6 @@ class PartnerAttributionInquiry(models.Model):
             if rec.partner_role:
                 partner.sudo().write({"partner_role": rec.partner_role})
 
-            # Your res_partner.py has partner_state readonly=True; but we write via sudo
             partner.sudo().write({"partner_state": "draft"})
 
             rec.sudo().write({

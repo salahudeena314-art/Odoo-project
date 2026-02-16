@@ -98,7 +98,6 @@ class AccountMove(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        # ✅ only sets attributed_partner_id if not provided (safe)
         for vals in vals_list:
             if vals.get("attributed_partner_id"):
                 continue
@@ -106,8 +105,7 @@ class AccountMove(models.Model):
             move_type = vals.get("move_type")
             if move_type not in ("out_invoice", "out_refund"):
                 continue
-
-            # if created as draft during web flow, we can auto-fill attribution
+            
             ref_code = (self._get_referral_code_from_http() or "").strip()
             if ref_code:
                 partner = self._find_partner_by_code(ref_code)
@@ -294,12 +292,36 @@ class AccountMove(models.Model):
 
     def _compute_payment_state(self):
         super()._compute_payment_state()
+
         if self.env.context.get("skip_partner_ledger_create"):
             return
 
-        paid_moves = self.filtered(lambda m: m._should_create_partner_ledger())
-        if paid_moves:
-            paid_moves.with_context(skip_partner_ledger_create=True)._create_partner_ledger_if_needed()
+        for move in self:
+
+            # 1️⃣ Create Ledger if needed
+            if move._should_create_partner_ledger():
+                move.with_context(skip_partner_ledger_create=True)._create_partner_ledger_if_needed()
+
+            # 2️⃣ AUTO Create Commission Vendor Bill
+            if move._pa_v1_should_create_commission_bill():
+                bill = move._pa_v1_create_commission_vendor_bill()
+
+                # 3️⃣ Attach Vendor Bill to Ledger (if exists)
+                ledger = self.env["partner.attribution.ledger"].sudo().search(
+                    [("invoice_id", "=", move.id)],
+                    limit=1,
+                )
+                if ledger and bill:
+                    ledger.write({
+                        "vendor_bill_id": bill.id,
+                    })
+
+            # 4️⃣ Recompute payout state after bill creation
+            ledger_lines = self.env["partner.attribution.ledger"].sudo().search(
+                [("invoice_id", "=", move.id)]
+            )
+            if ledger_lines:
+                ledger_lines.action_recompute_payout_state()
 
     # ----------------------------
     # Allow editing on draft, prevent changes after lock

@@ -4,7 +4,7 @@
     <template id="report_invoice_document_inherit_partner_attribution_v1"
               inherit_id="account.report_invoice_document">
 
-        <!-- ✅ Stable anchor: right after the address block -->
+        <!--Stable anchor: right after the address block -->
         <xpath expr="//t[@t-set='address']" position="after">
 
             <t t-if="o.attributed_partner_id">

@@ -126,7 +126,6 @@ class PartnerWebsiteController(http.Controller):
             "iban": iban or False,
             "coc": coc or False,
             "irs": irs or False,
-            # ✅ state not set; defaults to "inquiry"
         })
 
         return request.render(

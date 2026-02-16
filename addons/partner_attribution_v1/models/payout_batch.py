@@ -21,7 +21,7 @@ class PartnerAttributionPayoutBatch(models.Model):
         index=True,
     )
 
-    # ✅ New correct field (One2many)
+    # New correct field (One2many)
     ledger_line_ids = fields.One2many(
         "partner.attribution.ledger",
         "payout_batch_id",
@@ -30,7 +30,7 @@ class PartnerAttributionPayoutBatch(models.Model):
         copy=False,
     )
 
-    # ✅ Compatibility alias (so any leftover view/code using line_ids won't break)
+    # Compatibility alias
     line_ids = fields.One2many(
         "partner.attribution.ledger",
         "payout_batch_id",
@@ -71,7 +71,7 @@ class PartnerAttributionPayoutBatch(models.Model):
             if candidates:
                 candidates.action_recompute_payout_state()
 
-            # ✅ only payables with positive commission
+            # only payables with positive commission
             payables = candidates.filtered(lambda l: l.state == "payable" and (l.commission_amount or 0.0) > 0.0)
 
             if payables:
@@ -125,10 +125,10 @@ class PartnerAttributionPayoutBatch(models.Model):
             if not batch.ledger_line_ids:
                 raise UserError(_("No payable ledger lines loaded. Click 'Load Payables' first."))
 
-            # ✅ recompute again before generating
+            # recompute again before generating
             batch.ledger_line_ids.action_recompute_payout_state()
 
-            # ✅ only payable & positive
+            # only payable & positive
             lines_all = batch.ledger_line_ids.filtered(
                 lambda l: l.state == "payable" and (l.commission_amount or 0.0) > 0.0
             )
@@ -158,7 +158,7 @@ class PartnerAttributionPayoutBatch(models.Model):
             for partner_id, lines in by_partner.items():
                 partner = lines[0].partner_id
 
-                # ✅ FIX: ledger has commission_amount (NOT amount_total)
+                # ledger has commission_amount (NOT amount_total)
                 total = sum(lines.mapped("commission_amount")) or 0.0
                 if total <= 0.0:
                     continue
@@ -185,7 +185,7 @@ class PartnerAttributionPayoutBatch(models.Model):
                 # link ledger lines to bill
                 lines.sudo().write({"vendor_bill_id": bill.id})
 
-                # ✅ FIX: statement uses commission_amount
+                # statement uses commission_amount
                 content = "\n".join([
                     "Payout Batch: %s" % batch.name,
                     "Partner: %s" % partner.display_name,

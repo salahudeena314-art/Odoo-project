@@ -89,10 +89,8 @@
     </t>
   </template>
 
-  <!-- ===================== -->
-  <!-- /partners/apply (GET) -->
-  <!-- ===================== -->
-  <!-- ===================== -->
+
+<!-- ===================== -->
 <!-- /partners/apply (GET) -->
 <!-- ===================== -->
 <template id="website_partner_apply" name="Partner Apply">
@@ -150,7 +148,7 @@
             </div>
           </div>
 
-          <!-- ✅ Compliance fields requested by client -->
+          <!-- Compliance fields requested by client -->
           <div class="row g-3 mt-1">
             <div class="col-12 col-md-6">
               <label class="form-label">VAT / Tax ID</label>

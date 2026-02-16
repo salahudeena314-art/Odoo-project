@@ -38,7 +38,7 @@ class PartnerAttributionLedger(models.Model):
         index=True,
     )
 
-    # ✅ payout basis
+    # payout basis
     commission_rate_used = fields.Float(string="Commission Rate Used (%)", readonly=True)
     commission_amount = fields.Monetary(string="Commission Amount (Signed)", readonly=True)
 

@@ -6,7 +6,6 @@ class PartnerInquiryWorkflowPatch(models.Model):
     _inherit = "partner.attribution.inquiry"
 
     def action_submit(self):
-        # If your base model already has it, call it
         if hasattr(super(), "action_submit"):
             return super().action_submit()
 

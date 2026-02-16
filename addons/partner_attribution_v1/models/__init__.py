@@ -9,7 +9,6 @@ from . import payout_batch
 # from . import partner_inquiry
 #from . import account_move_payout_batch
 
-# Only keep this import if you REALLY have this model file and it defines _name correctly
 #from . import partner_attribution_inquiry
 
 #from . import commission_engine

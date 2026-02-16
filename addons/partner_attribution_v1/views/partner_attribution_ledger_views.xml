@@ -13,7 +13,7 @@
                 <field name="invoice_id"/>
                 <field name="entry_type"/>
 
-                <!-- ✅ replaced amount_total -->
+                <!--amount_total -->
                 <field name="commission_rate_used"/>
                 <field name="commission_amount"/>
 
@@ -55,7 +55,7 @@
                         <field name="invoice_paid_at" readonly="1"/>
                     </group>
 
-                    <!-- ✅ New payout basis -->
+                    <!-- New payout basis -->
                     <group string="Commission (Company Currency)">
                         <field name="currency_id" readonly="1"/>
                         <field name="commission_rate_used" readonly="1"/>

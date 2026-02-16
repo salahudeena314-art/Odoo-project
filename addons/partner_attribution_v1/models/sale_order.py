@@ -135,7 +135,6 @@ class SaleOrder(models.Model):
         for vals in vals_list:
             vals = dict(vals)
 
-            # ✅ If nothing explicitly set, try referral code from website session/cookie
             if not vals.get("partner_code_input") and not vals.get("attributed_partner_id"):
                 ref_code = (self._get_referral_code_from_http() or "").strip()
                 if ref_code:
